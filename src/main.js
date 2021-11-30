@@ -32,29 +32,88 @@ $(function(){
       return Math.max(acc, element);
     }, 0);
 
+    // create a bar for each element in the array
     $.each(data, function(index, barValue){
       // create bar
-      $bar = $("<div>").addClass('bar').attr("data-value", barValue);
-      $bar.css('height', (barValue * $barScale) + 'px');
-      // create label in bar
+      $bar = $("<div>")
+        .addClass('bar')
+        .attr("data-value", barValue)
+        .css('height', (barValue * $barScale) + 'px')
+        .css('display', 'flex')
+        .css('justify-content', 'center')
+        ;
+      // set bar options (except label position)
+      $bar
+        .css('background-color', options.barColor)
+        .css('min-width', (options.barWidth / data.length) + '%')
+        ;
+      //set label container position within bar
+      switch(options.labelPosition) {
+      case 'top':
+        $bar.css('align-items', 'flex-start');
+        break;
+      case 'center':
+        $bar.css('align-items', 'center');
+        break;
+      case 'bottom':
+        $bar.css('align-items', 'flex-end');
+        break;
+      }
+      // create label container in bar
+      $labelContainer = $("<div>")
+        .addClass('label')
+        .css('display', 'flex')
+        .css('justify-content', 'center')
+        // .css('align-items', 'center')
+        ;
+      // set label container options (position)
+      // create label in label container
+      $label = $("<p>")
+        .addClass('value-label')
+        .text(barValue)
+        .css('margin', '0')
+        .css('font-family', 'monospace')
+        .css('font-weight', '700')
+        .css('user-select', 'none')
+        ;
+        // pad labels depending on flex-align
+      switch(options.labelPosition) {
+      case 'top':
+        $label.css('margin-top', '3px');
+        break;
+      case 'bottom':
+        $label.css('margin-bottom', '3px');
+        break;
+      }
 
-      // set options
-      $bar.css('background-color', options.barColor);
-      $bar.css('min-width', (options.barWidth / data.length) + '%');
+        // idea: make size dependent on digit count
+
+        // set label options
+      $label
+        .css('color', options.labelColor)
+        .css('font-size', options.labelSize + 'px')
+      ;
+
+      $labelContainer.append($label);
+      $bar.append($labelContainer);
 
       $chart.append($bar);
     });
 
 
-    $("body").append($chart);
+    $("body").append($chart).css('background-color', 'grey');
+
   }
 
   drawBarChart(
-    [7, 4, 15, 12, 19, 24, 7, 45, 7, 8, 16, 7],
+    [7, 18, 3, 12, 19, 24, 7, 45, 7, 8, 16, 7],
     {
       height: 200,
       barColor: 'darkorange',
-      barWidth: 85
+      barWidth: 85,
+      labelColor: 'white',
+      labelSize: 8,
+      labelPosition: 'top'
     },
     'first-chart');
 
