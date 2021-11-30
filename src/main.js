@@ -36,7 +36,7 @@ $(function(){
       $bar = $("<div>").addClass('bar').attr("data-value", barValue);
       $bar.css('background-color', 'red');
       console.log(barValue.length);
-      $bar.css('width', (options.barWidth / data.length) + '%');
+      $bar.css('min-width', (options.barWidth / data.length) + '%');
 
       $bar.css('height', ($bar.attr("data-value") * $barScale) + 'px');
       $div.append($bar);
@@ -46,7 +46,7 @@ $(function(){
     $("body").append($div);
   }
 
-  drawBarChart([7, 4, 15, 12, 19, 24, 7, 45, 7, 8, 16, 7, 4, 15, 12, 19, 24, 7, 45, 7, 8, 16, 7, 4, 15, 12, 19, 24, 7, 45, 7, 8, 16], {height: 200, barWidth: 33}, 'first-chart');
+  drawBarChart([7, 4, 15, 12, 19, 24, 7, 45, 7, 8, 16, 7], {height: 200, barWidth: 95}, 'first-chart');
 
 });
 
