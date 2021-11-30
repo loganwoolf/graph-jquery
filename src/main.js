@@ -26,7 +26,7 @@ $(function(){
     $div.css('display', 'flex');
     $div.css('align-items', 'flex-end');
     $div.css('justify-content', 'space-between');
-    options.height ? $div.css('height', options.height + 'px') : $div.css('height', '600px');
+    options.height ? $div.css('height', options.height + 'px') : $div.css('height', $defaultHeight);
 
     $barScale = (options.height || $defaultHeight) / data.reduce( (acc, element) => {
       return Math.max(acc, element);
