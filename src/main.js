@@ -22,29 +22,31 @@ $(function(){
     */
     $defaultHeight = 600;
 
-    $div = $("<div>").addClass(element);
-    $div.css('display', 'flex');
-    $div.css('align-items', 'flex-end');
-    $div.css('justify-content', 'space-between');
-    options.height ? $div.css('height', options.height + 'px') : $div.css('height', $defaultHeight);
-
+    $chart = $("<div>").addClass('chart').addClass(element);
+    $chart.css('display', 'flex');
+    $chart.css('align-items', 'flex-end');
+    $chart.css('justify-content', 'space-between');
+    options.height ? $chart.css('height', options.height + 'px') : $chart.css('height', $defaultHeight);
+    // compute scale for chart
     $barScale = (options.height || $defaultHeight) / data.reduce( (acc, element) => {
       return Math.max(acc, element);
     }, 0);
 
     $.each(data, function(index, barValue){
+      // create bar
       $bar = $("<div>").addClass('bar').attr("data-value", barValue);
       $bar.css('height', (barValue * $barScale) + 'px');
+      // create label in bar
+
+      // set options
       $bar.css('background-color', options.barColor);
-      console.log(barValue.length);
       $bar.css('min-width', (options.barWidth / data.length) + '%');
 
-      $bar.css('height', ($bar.attr("data-value") * $barScale) + 'px');
-      $div.append($bar);
+      $chart.append($bar);
     });
 
 
-    $("body").append($div);
+    $("body").append($chart);
   }
 
   drawBarChart(
@@ -52,7 +54,7 @@ $(function(){
     {
       height: 200,
       barColor: 'darkorange',
-      barWidth: 95
+      barWidth: 85
     },
     'first-chart');
 
