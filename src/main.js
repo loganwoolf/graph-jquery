@@ -34,6 +34,7 @@ $(function(){
 
     $.each(data, function(index, barValue){
       $bar = $("<div>").addClass('bar').attr("data-value", barValue);
+      $bar.css('height', (barValue * $barScale) + 'px');
       $bar.css('background-color', options.barColor);
       console.log(barValue.length);
       $bar.css('min-width', (options.barWidth / data.length) + '%');
