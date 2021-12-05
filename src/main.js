@@ -105,6 +105,25 @@ $(function(){
       $chart.append($bar);
     });
 
+    // create a name label for each bar on the x-axis
+    $xAxisLabel = $("<div>")
+      .addClass('x-axis-label')
+      .css('display', 'flex')
+      .css('justify-content', 'space-between')
+      ;
+    $.each($structData, function (index, dataObj) {
+      $label = $("<p>")
+      .css('width', (options.barWidth / $structData.length) + '%')
+      .css('text-align', 'center')
+      .css('color', (options.xAxisColor || 'black'))
+      .css('font-size', options.xAxisSize + 'px')
+      .css('transform', 'rotate(' + options.xAxisRotation + 'deg)')
+      // .css('transform-origin', '%')
+      .text(dataObj.name);
+      $xAxisLabel.append($label)
+      ;
+    });
+
     // create title for chart
     $titleBlock = $('<div>')
       .css('background-color', options.titleColor[1] || 'hsla(0, 0%, 0%, 0)')
@@ -123,6 +142,7 @@ $(function(){
     $chartContainer = $("<div>").addClass(element);
     $chartContainer.append($titleBlock);
     $chartContainer.append($chart);
+    $chartContainer.append($xAxisLabel);
 
     // options for body element
     $("body")
@@ -159,7 +179,10 @@ $(function(){
       labelPosition: 'top',
       chartTitle: 'Data from Sources',
       titleSize: 16,
-      titleColor: ['darkorange']
+      titleColor: ['darkorange'],
+      xAxisColor: 'white',
+      xAxisSize: 8,
+      xAxisRotation: 315,
     },
     'first-chart');
 
