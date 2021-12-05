@@ -21,31 +21,37 @@ $(function(){
 
     */
     $defaultHeight = 600;
+    $structData = [];
+    // convert data array to objects if not already
+    if (typeof data[0] === 'number') {
+      $.each(data, function(index, barValue){
+        $structData.push({value: barValue});
+      });
+    } else {
+      $structData = data;
+    }
 
     $chart = $("<div>").addClass('chart');
     $chart.css('display', 'flex');
     $chart.css('align-items', 'flex-end');
     $chart.css('justify-content', 'space-between');
     options.height ? $chart.css('height', options.height + 'px') : $chart.css('height', $defaultHeight);
-    // compute scale for chart
-    $barScale = (options.height || $defaultHeight) / data.reduce( (acc, element) => {
-      return Math.max(acc, element);
-    }, 0);
-
+    // compute scale for chart by dividing chart height by maximum data value
+    $barScale = (options.height || $defaultHeight) / $structData.reduce((acc, barObj) => Math.max(acc, barObj.value), 0);
     // create a bar for each element in the array
-    $.each(data, function(index, barValue){
+    $.each($structData, function(index, barValue){
       // create bar
       $bar = $("<div>")
         .addClass('bar')
-        .attr("data-value", barValue)
-        .css('height', (barValue * $barScale) + 'px')
+        .attr("data-value", barValue.value)
+        .css('height', (barValue.value * $barScale) + 'px')
         .css('display', 'flex')
         .css('justify-content', 'center')
         ;
       // set bar options (except label position)
       $bar
         .css('background-color', options.barColor)
-        .css('min-width', (options.barWidth / data.length) + '%')
+        .css('min-width', (options.barWidth / $structData.length) + '%')
         ;
       //set label container position within bar
       switch(options.labelPosition) {
@@ -70,7 +76,7 @@ $(function(){
       // create label in label container
       $label = $("<p>")
         .addClass('value-label')
-        .text(barValue)
+        .text(barValue.value)
         .css('margin', '0')
         .css('font-weight', '700')
         .css('user-select', 'none')
@@ -103,7 +109,7 @@ $(function(){
     $titleBlock = $('<div>')
       .css('background-color', options.titleColor[1] || 'hsla(0, 0%, 0%, 0)')
       ;
-      $title = $('<h1>')
+    $title = $('<h1>')
       .css('color', options.titleColor[0])
       .css('font-size', options.titleSize + 'px')
       .text(options.chartTitle)
@@ -127,7 +133,23 @@ $(function(){
   }
 
   drawBarChart(
-    [7, 18, 3, 12, 19, 24, 7, 45, 7, 8, 16, 7],
+    // plain array
+    //[7, 18, 3, 12, 19, 24, 7, 45, 7, 8, 16, 7],
+    // objects
+    [
+      {name: 'Jan', value: 7},
+      {name: 'Feb', value: 18},
+      {name: 'Mar', value: 3},
+      {name: 'Apr', value: 12},
+      {name: 'May', value: 19},
+      {name: 'Jun', value: 24},
+      {name: 'Jul', value: 7},
+      {name: 'Aug', value: 45},
+      {name: 'Sep', value: 7},
+      {name: 'Oct', value: 8},
+      {name: 'Nov', value: 16},
+      {name: 'Dec', value: 7}
+    ],
     {
       height: 200,
       barColor: 'darkorange',
