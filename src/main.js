@@ -22,7 +22,7 @@ $(function(){
     */
     $defaultHeight = 600;
 
-    $chart = $("<div>").addClass('chart').addClass(element);
+    $chart = $("<div>").addClass('chart');
     $chart.css('display', 'flex');
     $chart.css('align-items', 'flex-end');
     $chart.css('justify-content', 'space-between');
@@ -72,7 +72,6 @@ $(function(){
         .addClass('value-label')
         .text(barValue)
         .css('margin', '0')
-        .css('font-family', 'monospace')
         .css('font-weight', '700')
         .css('user-select', 'none')
         ;
@@ -100,8 +99,30 @@ $(function(){
       $chart.append($bar);
     });
 
+    // create title for chart
+    $titleBlock = $('<div>')
+      .css('background-color', options.titleColor[1] || 'hsla(0, 0%, 0%, 0)')
+      ;
+      $title = $('<h1>')
+      .css('color', options.titleColor[0])
+      .css('font-size', options.titleSize + 'px')
+      .text(options.chartTitle)
+      ;
 
-    $("body").append($chart).css('background-color', 'grey');
+
+    $titleBlock.append($title);
+    // create
+
+    // add items to chartContainer
+    $chartContainer = $("<div>").addClass(element);
+    $chartContainer.append($titleBlock);
+    $chartContainer.append($chart);
+
+    // options for body element
+    $("body")
+      .append($chartContainer)
+      .css('font-family', 'monospace')
+      .css('background-color', 'grey');
 
   }
 
@@ -113,7 +134,10 @@ $(function(){
       barWidth: 85,
       labelColor: 'white',
       labelSize: 8,
-      labelPosition: 'top'
+      labelPosition: 'top',
+      chartTitle: 'Data from Sources',
+      titleSize: 16,
+      titleColor: ['darkorange']
     },
     'first-chart');
 
