@@ -39,12 +39,12 @@ $(function(){
     // compute scale for chart by dividing chart height by maximum data value
     $barScale = (options.height || $defaultHeight) / $structData.reduce((acc, barObj) => Math.max(acc, barObj.value), 0);
     // create a bar for each element in the array
-    $.each($structData, function(index, barValue){
+    $.each($structData, function(index, dataObj) {
       // create bar
       $bar = $("<div>")
         .addClass('bar')
-        .attr("data-value", barValue.value)
-        .css('height', (barValue.value * $barScale) + 'px')
+        .attr("data-value", dataObj.value)
+        .css('height', (dataObj.value * $barScale) + 'px')
         .css('display', 'flex')
         .css('justify-content', 'center')
         ;
@@ -76,7 +76,7 @@ $(function(){
       // create label in label container
       $label = $("<p>")
         .addClass('value-label')
-        .text(barValue.value)
+        .text(dataObj.value)
         .css('margin', '0')
         .css('font-weight', '700')
         .css('user-select', 'none')
@@ -182,7 +182,7 @@ $(function(){
       titleColor: ['darkorange'],
       xAxisColor: 'white',
       xAxisSize: 8,
-      xAxisRotation: 315,
+      xAxisRotation: 315
     },
     'first-chart');
 
