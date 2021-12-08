@@ -3,6 +3,7 @@ $(function(){
 
   function drawBarChart(data, options, element) {
 
+    // set defaults
     $defaultHeight = 600;
 
     // convert data array to objects if not already
@@ -16,21 +17,25 @@ $(function(){
       }
     }
 
-    $structuredData = [];
-    structureInputData(data);
+    function createTitle() {
+      $titleBlock.css('background-color', options.titleColor[1] || 'hsla(0, 0%, 0%, 0)');
+      $title = $('<h1>')
+      .css('color', options.titleColor[0])
+      .css('font-size', options.titleSize + 'px')
+      .text(options.chartTitle)
+      ;
 
 
-    // create major display elements
-    $chartContainer = $('<div>').addClass('api-output ' + element);
+      $titleBlock.append($title);
+      // create
+    }
 
-    $titleBlock = $('<div>').addClass('title');
-    $componentBlock = $('<div>').addClass('components');
-
-    $barsDiv = $('<div>').addClass('bars');
-    $xAxisDiv = $('<div>').addClass('x-axis');
-    $yAxisDiv = $('<div>').addClass('y-axis');
-
-
+    function createComponentBlock() {
+      $componentBlock
+        .css('display', 'grid')
+        .css('grid-template-columns', '10% 90%')
+      ;
+    }
 
     function createBars(){
       $barScale = (options.height || $defaultHeight) / $structuredData.reduce((acc, barObj) => Math.max(acc, barObj.value), 0);
@@ -107,7 +112,6 @@ $(function(){
         $barsDiv.append($bar);
       });
     }
-    createBars();
 
     function createXAxis() {
       // style x axis container
@@ -131,27 +135,41 @@ $(function(){
         $xAxisDiv.append($xLabelValue);
       });
     }
+
+    function createYAxis() {
+      $yAxisDiv.css('display', 'flex');
+    }
+
+    $structuredData = [];
+    structureInputData(data);
+
+
+    // create major display elements
+    $chartContainer = $('<div>').addClass('api-output ' + element);
+
+    $titleBlock = $('<div>').addClass('title');
+    $componentBlock = $('<div>').addClass('components');
+
+    $yAxisDiv = $('<div>').addClass('y-axis');
+    $barsDiv = $('<div>').addClass('bars');
+    $cornerDiv = $('<div>');
+    $xAxisDiv = $('<div>').addClass('x-axis');
+
+
+    createTitle();
+    createComponentBlock();
+    createBars();
     createXAxis();
 
-    function createTitle() {
-      $titleBlock.css('background-color', options.titleColor[1] || 'hsla(0, 0%, 0%, 0)');
-      $title = $('<h1>')
-      .css('color', options.titleColor[0])
-      .css('font-size', options.titleSize + 'px')
-      .text(options.chartTitle)
-      ;
-
-
-      $titleBlock.append($title);
-      // create
-    }
-    createTitle();
 
     // add items to chartContainer
 
     $chartContainer.append($titleBlock);
-    $chartContainer.append($barsDiv);
-    $chartContainer.append($xAxisDiv);
+    $chartContainer.append($componentBlock);
+    $componentBlock.append($yAxisDiv);
+    $componentBlock.append($barsDiv);
+    $componentBlock.append($cornerDiv);
+    $componentBlock.append($xAxisDiv);
 
     // options for body element
     $('body')
