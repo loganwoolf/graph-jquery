@@ -137,7 +137,42 @@ $(function(){
     }
 
     function createYAxis() {
-      $yAxisDiv.css('display', 'flex');
+      $yAxisDiv
+        .css('display', 'flex')
+        .css('flex-direction', 'column')
+        .css('justify-content', 'flex-end')
+        .css('border-right', '1px solid white')
+        .css('margin-right', '3px')
+      ;
+
+      $barScale = (options.height || $defaultHeight) / $structuredData.reduce((acc, barObj) => Math.max(acc, barObj.value), 0);
+      $divisions = Math.trunc((options.height || $defaultHeight) / (options.yAxisStep * $barScale));
+
+      function createDivisions(count) {
+        for (let i = 0; i < count; i++) {
+          $yAxisTic = $('<div>');
+          $yAxisTic
+            .css('box-sizing', 'border-box')
+            .css('border-top', '1px solid white')
+            .css('height', `${options.yAxisStep * $barScale}px`)
+          ;
+          if (i === 0) {
+            $yAxisTic.css('border-bottom', '1px solid white');
+          }
+
+          $yAxisScale = $('<p>');
+          $yAxisScale
+            .css('margin', '0 0 0 0')
+            .css('text-align', 'center')
+            .css('color', options.xAxisColor)
+            .css('font-size', `${options.xAxisSize}px`);
+          $yAxisScale.text(options.yAxisStep * (i + 1));
+          $yAxisTic.append($yAxisScale);
+          $yAxisDiv.prepend($yAxisTic);
+
+        }
+      }
+      createDivisions($divisions);
     }
 
     $structuredData = [];
@@ -158,6 +193,7 @@ $(function(){
 
     createTitle();
     createComponentBlock();
+    createYAxis();
     createBars();
     createXAxis();
 
@@ -184,18 +220,18 @@ $(function(){
     //[7, 18, 3, 12, 19, 24, 7, 45, 7, 8, 16, 7],
     // objects
     [
-      {name: 'Jan', value: 7},
+      {name: 'Jan', value: 100},
       {name: 'Feb', value: 18},
-      {name: 'Mar', value: 3},
-      {name: 'Apr', value: 12},
+      {name: 'Mar', value: 76},
+      {name: 'Apr', value: 112},
       {name: 'May', value: 19},
       {name: 'Jun', value: 24},
-      {name: 'Jul', value: 7},
+      {name: 'Jul', value: 67},
       {name: 'Aug', value: 45},
-      {name: 'Sep', value: 7},
-      {name: 'Oct', value: 8},
-      {name: 'Nov', value: 16},
-      {name: 'Dec', value: 7}
+      {name: 'Sep', value: 126},
+      {name: 'Oct', value: 82},
+      {name: 'Nov', value: 151},
+      {name: 'Dec', value: 79}
     ],
     {
       height: 200,
@@ -209,7 +245,8 @@ $(function(){
       titleColor: ['darkorange'],
       xAxisColor: 'white',
       xAxisSize: 8,
-      xAxisRotation: 315
+      xAxisRotation: 315,
+      yAxisStep: 25
     },
     'monthly-change');
 
