@@ -6,20 +6,18 @@ $(function(){
     $defaultHeight = 600;
 
     // convert data array to objects if not already
-    if (typeof data[0] === 'number') {
-      $.each(data, function(index, barValue){
-        $structData.push({value: barValue});
-      });
-    } else {
-      $structData = data;
+    function structureInputData(data) {
+      if (typeof data[0] === 'number') {
+        $.each(data, function(index, barValue){
+          $structuredData.push({value: barValue});
+        });
+      } else {
+        $structuredData = data;
+      }
     }
 
     $structuredData = [];
-    $chart = $("<div>").addClass('chart');
-    $chart.css('display', 'flex');
-    $chart.css('align-items', 'flex-end');
-    $chart.css('justify-content', 'space-between');
-    options.height ? $chart.css('height', options.height + 'px') : $chart.css('height', $defaultHeight);
+    structureInputData(data);
 
 
 
