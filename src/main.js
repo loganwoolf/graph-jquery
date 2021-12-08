@@ -20,117 +20,135 @@ $(function(){
     structureInputData(data);
 
 
+    // create major display elements
+    $chartContainer = $('<div>').addClass('api-output ' + element);
+
+    $titleBlock = $('<div>').addClass('title');
+    $componentBlock = $('<div>').addClass('components');
 
     $barsDiv = $('<div>').addClass('bars');
-    $barsDiv.css('display', 'flex');
-    $barsDiv.css('align-items', 'flex-end');
-    $barsDiv.css('justify-content', 'space-between');
-    options.height ? $barsDiv.css('height', options.height + 'px') : $barsDiv.css('height', $defaultHeight);
-    // compute scale for chart by dividing chart height by maximum data value
-    $barScale = (options.height || $defaultHeight) / $structuredData.reduce((acc, barObj) => Math.max(acc, barObj.value), 0);
-    // create a bar for each element in the array
-    $.each($structuredData, function(index, dataObj) {
-      // create bar
-      $bar = $('<div>')
-        .addClass('bar')
-        .attr('data-value', dataObj.value)
-        .css('height', (dataObj.value * $barScale) + 'px')
-        .css('display', 'flex')
-        .css('justify-content', 'center')
+    $xAxisDiv = $('<div>').addClass('x-axis');
+    $yAxisDiv = $('<div>').addClass('y-axis');
+
+
+
+    function createBars(){
+      $barScale = (options.height || $defaultHeight) / $structuredData.reduce((acc, barObj) => Math.max(acc, barObj.value), 0);
+
+      $barsDiv.css('display', 'flex');
+      $barsDiv.css('align-items', 'flex-end');
+      $barsDiv.css('justify-content', 'space-between');
+      options.height ? $barsDiv.css('height', options.height + 'px') : $barsDiv.css('height', $defaultHeight);
+      // compute scale for chart by dividing chart height by maximum data value
+
+      // create a bar for each element in the array
+      $.each($structuredData, function(index, dataObj) {
+        // create bar
+        $bar = $('<div>')
+          .addClass('bar')
+          .attr('data-value', dataObj.value)
+          .css('height', (dataObj.value * $barScale) + 'px')
+          .css('display', 'flex')
+          .css('justify-content', 'center')
+          ;
+        // set bar options (except label position)
+        $bar
+          .css('background-color', options.barColor)
+          .css('min-width', (options.barWidth / $structuredData.length) + '%')
+          ;
+        //set label container position within bar
+        switch(options.labelPosition) {
+        case 'top':
+          $bar.css('align-items', 'flex-start');
+          break;
+        case 'center':
+          $bar.css('align-items', 'center');
+          break;
+        case 'bottom':
+          $bar.css('align-items', 'flex-end');
+          break;
+        }
+        // create label container in bar
+        $barLabelDiv = $('<div>').addClass('bar-label');
+        $barLabelDiv.css('display', 'flex')
+          .css('justify-content', 'center')
+          // .css('align-items', 'center')
+          ;
+        // set label container options (position)
+        // create label in label container
+        $barLabelValue = $('<p>')
+          .addClass('bar-label-value')
+          .text(dataObj.value)
+          .css('margin', '0')
+          .css('font-weight', '700')
+          .css('user-select', 'none')
+          ;
+          // pad labels depending on flex-align
+        switch(options.labelPosition) {
+        case 'top':
+          $barLabelValue.css('margin-top', '3px');
+          break;
+        case 'bottom':
+          $barLabelValue.css('margin-bottom', '3px');
+          break;
+        }
+
+          // idea: make size dependent on digit count
+
+          // set label options
+        $barLabelValue
+          .css('color', options.labelColor)
+          .css('font-size', options.labelSize + 'px')
         ;
-      // set bar options (except label position)
-      $bar
-        .css('background-color', options.barColor)
-        .css('min-width', (options.barWidth / $structuredData.length) + '%')
-        ;
-      //set label container position within bar
-      switch(options.labelPosition) {
-      case 'top':
-        $bar.css('align-items', 'flex-start');
-        break;
-      case 'center':
-        $bar.css('align-items', 'center');
-        break;
-      case 'bottom':
-        $bar.css('align-items', 'flex-end');
-        break;
-      }
-      // create label container in bar
-      $barLabelDiv = $('<div>')
-        .addClass('bar-label')
-        .css('display', 'flex')
-        .css('justify-content', 'center')
-        // .css('align-items', 'center')
-        ;
-      // set label container options (position)
-      // create label in label container
-      $barLabelValue = $('<p>')
-        .addClass('bar-label-value')
-        .text(dataObj.value)
-        .css('margin', '0')
-        .css('font-weight', '700')
-        .css('user-select', 'none')
-        ;
-        // pad labels depending on flex-align
-      switch(options.labelPosition) {
-      case 'top':
-        $barLabelValue.css('margin-top', '3px');
-        break;
-      case 'bottom':
-        $barLabelValue.css('margin-bottom', '3px');
-        break;
-      }
 
-        // idea: make size dependent on digit count
+        $barLabelDiv.append($barLabelValue);
+        $bar.append($barLabelDiv);
 
-        // set label options
-      $barLabelValue
-        .css('color', options.labelColor)
-        .css('font-size', options.labelSize + 'px')
-      ;
+        $barsDiv.append($bar);
+      });
+    }
+    createBars();
 
-      $barLabelDiv.append($barLabelValue);
-      $bar.append($barLabelDiv);
-
-      $barsDiv.append($bar);
-    });
-
-    // create a name label for each bar on the x-axis
-    $xAxisDiv = $('<div>')
-      .addClass('x-axis')
+    function createXAxis() {
+      // style x axis container
+      $xAxisDiv
       .css('display', 'flex')
       .css('justify-content', 'space-between')
       ;
-    $.each($structuredData, function (index, dataObj) {
-      $barLabelValue = $('<p>')
-      .css('width', (options.barWidth / $structuredData.length) + '%')
-      .css('text-align', 'center')
-      .css('color', (options.xAxisColor || 'black'))
-      .css('font-size', options.xAxisSize + 'px')
-      .css('transform', 'rotate(' + options.xAxisRotation + 'deg)')
-      // .css('transform-origin', '%')
-      .text(dataObj.name);
-      $xAxisDiv.append($barLabelValue)
-      ;
-    });
 
-    // create title for chart
-    $titleBlock = $('<div>')
-      .addClass('title')
-      .css('background-color', options.titleColor[1] || 'hsla(0, 0%, 0%, 0)')
-      ;
-    $title = $('<h1>')
+      // create a name label for each bar on the x-axis
+      $.each($structuredData, function (index, dataObj) {
+        $xLabelValue = $('<p>')
+          .css('width', (options.barWidth / $structuredData.length) + '%')
+          .css('text-align', 'center')
+          .css('color', (options.xAxisColor || 'black'))
+          .css('font-size', options.xAxisSize + 'px')
+          .css('transform', 'rotate(' + options.xAxisRotation + 'deg)')
+          .text(dataObj.name)
+        ;
+
+        //add bar labels to
+        $xAxisDiv.append($xLabelValue);
+      });
+    }
+    createXAxis();
+
+    function createTitle() {
+      $titleBlock.css('background-color', options.titleColor[1] || 'hsla(0, 0%, 0%, 0)');
+      $title = $('<h1>')
       .css('color', options.titleColor[0])
       .css('font-size', options.titleSize + 'px')
       .text(options.chartTitle)
       ;
 
 
-    $titleBlock.append($title);
-    // create
+      $titleBlock.append($title);
+      // create
+    }
+    createTitle();
 
     // add items to chartContainer
-    $chartContainer = $('<div>').addClass('api-output ' + element);
+
     $chartContainer.append($titleBlock);
     $chartContainer.append($barsDiv);
     $chartContainer.append($xAxisDiv);
