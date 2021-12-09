@@ -149,7 +149,7 @@ $(function(){
       $barScale = (options.height || $defaultHeight) / $structuredData.reduce((acc, barObj) => Math.max(acc, barObj.value), 0);
       $divisions = Math.trunc((options.height || $defaultHeight) / (options.yAxisStep * $barScale));
 
-      function createDivisions(count) {
+      function createYAxisDivisions(count) {
         for (let i = 0; i < count; i++) {
           $yAxisTic = $('<div>');
           $yAxisTic
@@ -173,7 +173,7 @@ $(function(){
 
         }
       }
-      createDivisions($divisions);
+      createYAxisDivisions($divisions);
     }
 
     $structuredData = [];
@@ -203,6 +203,7 @@ $(function(){
 
     $chartContainer.append($titleBlock);
     $chartContainer.append($componentBlock);
+
     $componentBlock.append($yAxisDiv);
     $componentBlock.append($barsDiv);
     $componentBlock.append($cornerDiv);
@@ -247,7 +248,7 @@ $(function(){
       xAxisColor: 'white',
       xAxisSize: 8,
       xAxisRotation: 315,
-      yAxisStep: 25
+      yAxisStep: 50
     },
     'monthly-change');
 
