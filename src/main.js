@@ -20,6 +20,7 @@ $(function(){
     function createTitle() {
       $titleBlock.css('background-color', options.titleColor[1] || 'hsla(0, 0%, 0%, 0)');
       $title = $('<h1>')
+      .css('text-align', 'center')
       .css('color', options.titleColor[0])
       .css('font-size', options.titleSize + 'px')
       .text(options.chartTitle)
