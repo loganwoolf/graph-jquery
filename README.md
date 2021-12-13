@@ -13,3 +13,5 @@ Lighthouse Labs Prep Material Stretch Project
 - jQuery cheatsheet https://oscarotero.com/jquery/
 
 - jQuery tips https://tuts.alexmercedcoder.com/2021/8/js_jquery_cheatsheet/
+
+- Closure for a jQuery plugin (very helpful!) https://stackoverflow.com/a/18189454
