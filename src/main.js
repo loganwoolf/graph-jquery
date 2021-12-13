@@ -3,10 +3,7 @@ $.fn.plugin = function() {
   return {
     BarChart: function(data, options, element) {
 
-    // set defaults
-      $defaultHeight = 600;
 
-    // convert data array to objects if not already
       function structureInputData(data) {
         if (typeof data[0] === 'number') {
           $.each(data, function(index, barValue){
@@ -176,11 +173,22 @@ $.fn.plugin = function() {
         createYAxisDivisions($divisions);
       }
 
+      function styleChartContainer() {
+        $chartContainer
+          .css('max-width', '720px')
+          .css('margin', '0 auto')
+          ;
+      }
+
+      // set defaults
+      $defaultHeight = 600;
+
+      // convert data array to objects if not already
       $structuredData = [];
       structureInputData(data);
 
 
-    // create major display elements
+      // create major display elements
       $chartContainer = $('<div>').addClass('api-output ' + element);
 
       $titleBlock = $('<div>').addClass('title');
@@ -191,7 +199,8 @@ $.fn.plugin = function() {
       $cornerDiv = $('<div>');
       $xAxisDiv = $('<div>').addClass('x-axis');
 
-
+      // run component functions
+      styleChartContainer();
       createTitle();
       createComponentBlock();
       createYAxis();
@@ -199,8 +208,7 @@ $.fn.plugin = function() {
       createXAxis();
 
 
-    // add items to chartContainer
-
+      // add items to chartContainer
       $chartContainer.append($titleBlock);
       $chartContainer.append($componentBlock);
 
@@ -209,7 +217,7 @@ $.fn.plugin = function() {
       $componentBlock.append($cornerDiv);
       $componentBlock.append($xAxisDiv);
 
-    // options for body element
+      // options for body element
       $('body')
       .append($chartContainer)
       .css('font-family', 'monospace')
