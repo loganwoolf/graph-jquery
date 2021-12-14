@@ -35,7 +35,76 @@ $.fn.plugin = function() {
       ;
       }
 
-      function createBars(){
+      function createSingleBar(dataObj) {
+        // create bar
+        $bar = $('<div>')
+        .addClass('bar')
+        .attr('data-value', dataObj.value)
+        .css('height', (dataObj.value * $barScale) + 'px')
+        .css('display', 'flex')
+        .css('justify-content', 'center')
+        ;
+        // set bar options (except label position)
+        $bar
+        .css('background-color', options.barColor)
+        .css('min-width', (options.barWidth / $structuredData.length) + '%')
+        ;
+        //set label container position within bar
+        switch(options.labelPosition) {
+        case 'top':
+          $bar.css('align-items', 'flex-start');
+          break;
+        case 'center':
+          $bar.css('align-items', 'center');
+          break;
+        case 'bottom':
+          $bar.css('align-items', 'flex-end');
+          break;
+        }
+        // create label container in bar
+        $barLabelDiv = $('<div>').addClass('bar-label');
+        $barLabelDiv.css('display', 'flex')
+        .css('justify-content', 'center')
+        // .css('align-items', 'center')
+        ;
+        // set label container options (position)
+        // create label in label container
+        $barLabelValue = $('<p>')
+        .addClass('bar-label-value')
+        .text(dataObj.value)
+        .css('margin', '0')
+        .css('font-weight', '700')
+        .css('user-select', 'none')
+        ;
+        // pad labels depending on flex-align
+        switch(options.labelPosition) {
+        case 'top':
+          $barLabelValue.css('margin-top', '3px');
+          break;
+        case 'bottom':
+          $barLabelValue.css('margin-bottom', '3px');
+          break;
+        }
+
+        // idea: make size dependent on digit count
+
+        // set label options
+        $barLabelValue
+        .css('color', options.labelColor)
+        .css('font-size', options.labelSize + 'px')
+        ;
+
+        $barLabelDiv.append($barLabelValue);
+        $bar.append($barLabelDiv);
+
+        $barsDiv.append($bar);
+      }
+
+      // function createStackedBar() {
+
+      // }
+
+      function createBars() {
         $barScale = (options.height || $defaultHeight) / $structuredData.reduce((acc, barObj) => Math.max(acc, barObj.value), 0);
 
         $barsDiv.css('display', 'flex');
@@ -46,70 +115,15 @@ $.fn.plugin = function() {
 
       // create a bar for each element in the array
         $.each($structuredData, function(index, dataObj) {
-        // create bar
-          $bar = $('<div>')
-          .addClass('bar')
-          .attr('data-value', dataObj.value)
-          .css('height', (dataObj.value * $barScale) + 'px')
-          .css('display', 'flex')
-          .css('justify-content', 'center')
-          ;
-        // set bar options (except label position)
-          $bar
-          .css('background-color', options.barColor)
-          .css('min-width', (options.barWidth / $structuredData.length) + '%')
-          ;
-        //set label container position within bar
-          switch(options.labelPosition) {
-          case 'top':
-            $bar.css('align-items', 'flex-start');
-            break;
-          case 'center':
-            $bar.css('align-items', 'center');
-            break;
-          case 'bottom':
-            $bar.css('align-items', 'flex-end');
-            break;
+          if (typeof dataObj.value === 'number') {
+            createSingleBar(dataObj);
           }
-        // create label container in bar
-          $barLabelDiv = $('<div>').addClass('bar-label');
-          $barLabelDiv.css('display', 'flex')
-          .css('justify-content', 'center')
-          // .css('align-items', 'center')
-          ;
-        // set label container options (position)
-        // create label in label container
-          $barLabelValue = $('<p>')
-          .addClass('bar-label-value')
-          .text(dataObj.value)
-          .css('margin', '0')
-          .css('font-weight', '700')
-          .css('user-select', 'none')
-          ;
-          // pad labels depending on flex-align
-          switch(options.labelPosition) {
-          case 'top':
-            $barLabelValue.css('margin-top', '3px');
-            break;
-          case 'bottom':
-            $barLabelValue.css('margin-bottom', '3px');
-            break;
-          }
-
-          // idea: make size dependent on digit count
-
-          // set label options
-          $barLabelValue
-          .css('color', options.labelColor)
-          .css('font-size', options.labelSize + 'px')
-        ;
-
-          $barLabelDiv.append($barLabelValue);
-          $bar.append($barLabelDiv);
-
-          $barsDiv.append($bar);
         });
       }
+
+
+
+
 
       function createXAxis() {
       // style x axis container
