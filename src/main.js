@@ -3,7 +3,6 @@ $.fn.plugin = function() {
   return {
     BarChart: function(data, options, element) {
 
-
       function structureInputData(data) {
         if (typeof data[0] === 'number') {
           $.each(data, function(index, barValue){
@@ -115,11 +114,32 @@ $.fn.plugin = function() {
         $barsDiv.append($bar);
       }
 
-      // function createStackedBar() {
-
-      // }
+      function createStackedBar(dataObj) {
 
 
+        $stackContainer = $('<div>')
+        .addClass('stack-bar')
+        .css('display', 'flex')
+        .css('flex-direction', 'column')
+        .css('min-width', options.barWidth / $structuredData.length + '%')
+        ;
+
+        $.each(dataObj.value, function(index, stackObj) {
+          console.log(stackObj);
+          $stackElement = $('<div>')
+            .addClass('stack-element')
+            .attr('data-value', stackObj.value)
+            .attr('data-name', stackObj.name)
+            .css('height', (stackObj.value * $barScale) + 'px')
+            .css('width', '100%')
+            .css('background-color', options.barColor)
+          ;
+
+          $stackContainer.prepend($stackElement);
+        });
+
+        $barsDiv.append($stackContainer);
+      }
 
       function createBars() {
 
@@ -135,6 +155,8 @@ $.fn.plugin = function() {
         $.each($structuredData, function(index, dataObj) {
           if (typeof dataObj.value === 'number') {
             createSingleBar(dataObj);
+          } else if (typeof dataObj.value === 'object') {
+            createStackedBar(dataObj);
           }
         });
       }
@@ -215,7 +237,6 @@ $.fn.plugin = function() {
       $structuredData = [];
       structureInputData(data);
 
-
       // create major display elements
       $chartContainer = $('<div>').addClass('api-output ' + element);
 
@@ -235,7 +256,6 @@ $.fn.plugin = function() {
       createBars();
       createXAxis();
 
-
       // add items to chartContainer
       $chartContainer.append($titleBlock);
       $chartContainer.append($componentBlock);
@@ -250,7 +270,6 @@ $.fn.plugin = function() {
       .append($chartContainer)
       .css('font-family', 'monospace')
       .css('background-color', 'grey');
-
     }
   };
 };
@@ -271,7 +290,7 @@ draw.BarChart(
           {name: 'Wk1', value: 40},
           {name: 'Wk2', value: 40},
           {name: 'Wk3', value: 40},
-          {name: 'Wk4', value: 75}
+          {name: 'Wk4', value: 90}
         // eslint-disable-next-line indent
         ]
       // eslint-disable-next-line indent
