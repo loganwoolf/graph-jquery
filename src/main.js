@@ -14,6 +14,21 @@ $.fn.plugin = function() {
         }
       }
 
+      function computeMaxValue(values) {
+        let maxValue = 0;
+        for (let datum of values) {
+          if (typeof datum.value === 'number' && datum.value > maxValue) {
+            maxValue = datum.value;
+          } else if (typeof datum.value === 'object') {
+            let subMax = datum.value.reduce((acc, stackObj) => stackObj.value + acc, 0);
+            if (subMax > maxValue) {
+              maxValue = subMax;
+            }
+          }
+        }
+        return maxValue;
+      }
+
       function createTitle() {
         $titleBlock.css('background-color', options.titleColor[1] || 'hsla(0, 0%, 0%, 0)');
         $title = $('<h1>')
@@ -104,8 +119,11 @@ $.fn.plugin = function() {
 
       // }
 
+
+
       function createBars() {
-        $barScale = (options.height || $defaultHeight) / $structuredData.reduce((acc, barObj) => Math.max(acc, barObj.value), 0);
+
+        $barScale = (options.height || $defaultHeight) / computeMaxValue($structuredData);
 
         $barsDiv.css('display', 'flex');
         $barsDiv.css('align-items', 'flex-end');
@@ -120,10 +138,6 @@ $.fn.plugin = function() {
           }
         });
       }
-
-
-
-
 
       function createXAxis() {
       // style x axis container
@@ -252,7 +266,16 @@ draw.BarChart(
   [
       {name: 'Jan', value: 100},
       {name: 'Feb', value: 18},
-      {name: 'Mar', value: 76},
+      // eslint-disable-next-line indent
+      {name: 'Mar', value: [
+          {name: 'Wk1', value: 40},
+          {name: 'Wk2', value: 40},
+          {name: 'Wk3', value: 40},
+          {name: 'Wk4', value: 75}
+        // eslint-disable-next-line indent
+        ]
+      // eslint-disable-next-line indent
+      },
       {name: 'Apr', value: 112},
       {name: 'May', value: 19},
       {name: 'Jun', value: 24},
