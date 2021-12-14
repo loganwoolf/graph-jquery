@@ -171,7 +171,7 @@ $.fn.plugin = function() {
         .css('margin-right', '3px')
       ;
 
-        $barScale = (options.height || $defaultHeight) / $structuredData.reduce((acc, barObj) => Math.max(acc, barObj.value), 0);
+        $barScale = (options.height || $defaultHeight) / computeMaxValue($structuredData);
         $divisions = Math.trunc((options.height || $defaultHeight) / (options.yAxisStep * $barScale));
 
         function createYAxisDivisions(count) {
