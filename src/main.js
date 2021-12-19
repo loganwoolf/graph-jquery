@@ -123,8 +123,11 @@ $.fn.plugin = function() {
         .css('min-width', options.barWidth / $structuredData.length + '%')
         ;
 
+        // compute total of stacked bars for label
+        const sumTotal = dataObj.value.reduce((acc, element) => acc + element.value, 0);
+
+        //create an element for each item in stack
         $.each(dataObj.value, function(index, stackObj) {
-          console.log(stackObj);
           $stackElement = $('<div>')
             .addClass('stack-element')
             .attr('data-value', stackObj.value)
@@ -134,7 +137,9 @@ $.fn.plugin = function() {
             .css('height', (stackObj.value * $barScale) + 'px')
             .css('width', '100%')
             .css('background-color', options.barColor)
+            .css('overflow', 'hidden')
           ;
+
           switch(options.labelPosition) {
           case 'top':
             $stackElement.css('justify-content', 'flex-start');
@@ -146,6 +151,8 @@ $.fn.plugin = function() {
             $stackElement.css('justify-content', 'flex-end');
             break;
           }
+
+          //create labels for sub-name and sub-value
           createBarLabel(stackObj, 'name');
           $stackElement.append($barLabelDiv);
           createBarLabel(stackObj, 'value');
@@ -153,6 +160,14 @@ $.fn.plugin = function() {
 
           $stackContainer.prepend($stackElement);
         });
+
+        // pass sumTotal value into bar label function to create label for total
+        createBarLabel({value: sumTotal}, 'value');
+
+        //apply sumTotal label based on position option
+        options.labelPosition === 'top'
+          ? $stackContainer.children().first().prepend($barLabelDiv)
+          : $stackContainer.children().last().append($barLabelDiv);
 
         $barsDiv.append($stackContainer);
       }
@@ -303,10 +318,10 @@ draw.BarChart(
       {name: 'Feb', value: 18},
       // eslint-disable-next-line indent
       {name: 'Mar', value: [
-          {name: 'Week 1', value: 40},
-          {name: 'Week 2', value: 40},
-          {name: 'Week 3', value: 40},
-          {name: 'Week 4', value: 90}
+          {name: 'Week 1', value: 30},
+          {name: 'Week 2', value: 30},
+          {name: 'Week 3', value: 30},
+          {name: 'Week 4', value: 30}
         // eslint-disable-next-line indent
         ]
       // eslint-disable-next-line indent
@@ -326,15 +341,15 @@ draw.BarChart(
     barColor: 'darkorange',
     barWidth: 85,
     labelColor: 'white',
-    labelSize: 8,
-    labelPosition: 'center',
+    labelSize: 10,
+    labelPosition: 'top',
     chartTitle: 'Data from Sources',
-    titleSize: 16,
-    titleColor: ['darkorange'],
+    titleSize: 32,
+    titleColor: ['darkorange', 'white'],
     xAxisColor: 'white',
-    xAxisSize: 8,
+    xAxisSize: 10,
     xAxisRotation: 315,
-    yAxisStep: 50
+    yAxisStep: 25
   },
     'monthly-change');
 
