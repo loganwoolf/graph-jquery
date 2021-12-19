@@ -129,10 +129,23 @@ $.fn.plugin = function() {
             .addClass('stack-element')
             .attr('data-value', stackObj.value)
             .attr('data-name', stackObj.name)
+            .css('display', 'flex')
+            .css('flex-direction', 'column')
             .css('height', (stackObj.value * $barScale) + 'px')
             .css('width', '100%')
             .css('background-color', options.barColor)
           ;
+          switch(options.labelPosition) {
+          case 'top':
+            $stackElement.css('justify-content', 'flex-start');
+            break;
+          case 'center':
+            $stackElement.css('justify-content', 'center');
+            break;
+          case 'bottom':
+            $stackElement.css('justify-content', 'flex-end');
+            break;
+          }
           createBarLabel(stackObj, 'name');
           $stackElement.append($barLabelDiv);
           createBarLabel(stackObj, 'value');
@@ -314,7 +327,7 @@ draw.BarChart(
     barWidth: 85,
     labelColor: 'white',
     labelSize: 8,
-    labelPosition: 'top',
+    labelPosition: 'center',
     chartTitle: 'Data from Sources',
     titleSize: 16,
     titleColor: ['darkorange'],
