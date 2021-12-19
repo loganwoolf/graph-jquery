@@ -49,32 +49,7 @@ $.fn.plugin = function() {
       ;
       }
 
-      function createSingleBar(dataObj) {
-        // create bar
-        $bar = $('<div>')
-        .addClass('bar')
-        .attr('data-value', dataObj.value)
-        .css('height', (dataObj.value * $barScale) + 'px')
-        .css('display', 'flex')
-        .css('justify-content', 'center')
-        ;
-        // set bar options (except label position)
-        $bar
-        .css('background-color', options.barColor)
-        .css('min-width', (options.barWidth / $structuredData.length) + '%')
-        ;
-        //set label container position within bar
-        switch(options.labelPosition) {
-        case 'top':
-          $bar.css('align-items', 'flex-start');
-          break;
-        case 'center':
-          $bar.css('align-items', 'center');
-          break;
-        case 'bottom':
-          $bar.css('align-items', 'flex-end');
-          break;
-        }
+      function createBarLabel(dataObj) {
         // create label container in bar
         $barLabelDiv = $('<div>').addClass('bar-label');
         $barLabelDiv.css('display', 'flex')
@@ -109,13 +84,41 @@ $.fn.plugin = function() {
         ;
 
         $barLabelDiv.append($barLabelValue);
+      }
+
+      function createSingleBar(dataObj) {
+        // create bar
+        $bar = $('<div>')
+        .addClass('bar')
+        .attr('data-value', dataObj.value)
+        .css('height', (dataObj.value * $barScale) + 'px')
+        .css('display', 'flex')
+        .css('justify-content', 'center')
+        ;
+        // set bar options (except label position)
+        $bar
+        .css('background-color', options.barColor)
+        .css('min-width', (options.barWidth / $structuredData.length) + '%')
+        ;
+        //set label container position within bar
+        switch(options.labelPosition) {
+        case 'top':
+          $bar.css('align-items', 'flex-start');
+          break;
+        case 'center':
+          $bar.css('align-items', 'center');
+          break;
+        case 'bottom':
+          $bar.css('align-items', 'flex-end');
+          break;
+        }
+        createBarLabel(dataObj);
         $bar.append($barLabelDiv);
 
         $barsDiv.append($bar);
       }
 
       function createStackedBar(dataObj) {
-
 
         $stackContainer = $('<div>')
         .addClass('stack-bar')
@@ -306,7 +309,7 @@ draw.BarChart(
       {name: 'Dec', value: 79}
   ],
   {
-    height: 200,
+    height: 350,
     barColor: 'darkorange',
     barWidth: 85,
     labelColor: 'white',
