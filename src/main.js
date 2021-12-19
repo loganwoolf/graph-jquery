@@ -3,7 +3,6 @@ $.fn.plugin = function() {
   return {
     BarChart: function(data, options, element) {
 
-
       function structureInputData(data) {
         if (typeof data[0] === 'number') {
           $.each(data, function(index, barValue){
@@ -12,6 +11,21 @@ $.fn.plugin = function() {
         } else {
           $structuredData = data;
         }
+      }
+
+      function computeMaxValue(values) {
+        let maxValue = 0;
+        for (let datum of values) {
+          if (typeof datum.value === 'number' && datum.value > maxValue) {
+            maxValue = datum.value;
+          } else if (typeof datum.value === 'object') {
+            let subMax = datum.value.reduce((acc, stackObj) => stackObj.value + acc, 0);
+            if (subMax > maxValue) {
+              maxValue = subMax;
+            }
+          }
+        }
+        return maxValue;
       }
 
       function createTitle() {
@@ -35,8 +49,135 @@ $.fn.plugin = function() {
       ;
       }
 
-      function createBars(){
-        $barScale = (options.height || $defaultHeight) / $structuredData.reduce((acc, barObj) => Math.max(acc, barObj.value), 0);
+      function createBarLabel(dataObj, key) {
+        // create label container in bar
+        $barLabelDiv = $('<div>').addClass('bar-label');
+        $barLabelDiv.css('display', 'flex')
+        .css('justify-content', 'center')
+        // .css('align-items', 'center')
+        ;
+        // set label container options (position)
+        // create label in label container
+        $barLabelValue = $('<p>')
+        .addClass('bar-label-value')
+        .text(dataObj[key])
+        .css('margin', '0')
+        .css('font-weight', '700')
+        .css('user-select', 'none')
+        ;
+
+        // pad labels depending on flex-align
+        $barLabelValue
+          .css('margin-top', '3px')
+          .css('margin-bottom', '3px');
+
+        // idea: make size dependent on digit count
+
+        // set label options
+        $barLabelValue
+        .css('color', options.labelColor)
+        .css('font-size', options.labelSize + 'px')
+        ;
+
+        $barLabelDiv.append($barLabelValue);
+      }
+
+      function createSingleBar(dataObj) {
+        // create bar
+        $bar = $('<div>')
+        .addClass('bar')
+        .attr('data-name', dataObj.name)
+        .attr('data-value', dataObj.value)
+        .css('height', (dataObj.value * $barScale) + 'px')
+        .css('display', 'flex')
+        .css('justify-content', 'center')
+        ;
+        // set bar options (except label position)
+        $bar
+        .css('background-color', options.barColor)
+        .css('min-width', (options.barWidth / $structuredData.length) + '%')
+        ;
+        //set label container position within bar
+        switch(options.labelPosition) {
+        case 'top':
+          $bar.css('align-items', 'flex-start');
+          break;
+        case 'center':
+          $bar.css('align-items', 'center');
+          break;
+        case 'bottom':
+          $bar.css('align-items', 'flex-end');
+          break;
+        }
+        createBarLabel(dataObj, 'value');
+        $bar.append($barLabelDiv);
+
+        $barsDiv.append($bar);
+      }
+
+      function createStackedBar(dataObj) {
+        // compute total of stacked bars for label
+        const sumTotal = dataObj.value.reduce((acc, element) => acc + element.value, 0);
+
+        $stackContainer = $('<div>')
+        .addClass('stack-bar')
+        .attr('data-name', dataObj.name)
+        .attr('data-value', sumTotal)
+        .css('display', 'flex')
+        .css('flex-direction', 'column')
+        .css('min-width', options.barWidth / $structuredData.length + '%')
+        ;
+
+
+        //create an element for each item in stack
+        $.each(dataObj.value, function(index, stackObj) {
+          $stackElement = $('<div>')
+            .addClass('stack-element')
+            .attr('data-name', stackObj.name)
+            .attr('data-value', stackObj.value)
+            .css('display', 'flex')
+            .css('flex-direction', 'column')
+            .css('height', (stackObj.value * $barScale) + 'px')
+            .css('width', '100%')
+            .css('background-color', options.barColor)
+            .css('overflow', 'hidden')
+          ;
+
+          switch(options.labelPosition) {
+          case 'top':
+            $stackElement.css('justify-content', 'flex-start');
+            break;
+          case 'center':
+            $stackElement.css('justify-content', 'center');
+            break;
+          case 'bottom':
+            $stackElement.css('justify-content', 'flex-end');
+            break;
+          }
+
+          //create labels for sub-name and sub-value
+          createBarLabel(stackObj, 'name');
+          $stackElement.append($barLabelDiv);
+          createBarLabel(stackObj, 'value');
+          $stackElement.append($barLabelDiv);
+
+          $stackContainer.prepend($stackElement);
+        });
+
+        // pass sumTotal value into bar label function to create label for total
+        createBarLabel({value: sumTotal}, 'value');
+
+        //apply sumTotal label based on position option
+        options.labelPosition === 'top'
+          ? $stackContainer.children().first().prepend($barLabelDiv)
+          : $stackContainer.children().last().append($barLabelDiv);
+
+        $barsDiv.append($stackContainer);
+      }
+
+      function createBars() {
+
+        $barScale = (options.height || $defaultHeight) / computeMaxValue($structuredData);
 
         $barsDiv.css('display', 'flex');
         $barsDiv.css('align-items', 'flex-end');
@@ -46,68 +187,11 @@ $.fn.plugin = function() {
 
       // create a bar for each element in the array
         $.each($structuredData, function(index, dataObj) {
-        // create bar
-          $bar = $('<div>')
-          .addClass('bar')
-          .attr('data-value', dataObj.value)
-          .css('height', (dataObj.value * $barScale) + 'px')
-          .css('display', 'flex')
-          .css('justify-content', 'center')
-          ;
-        // set bar options (except label position)
-          $bar
-          .css('background-color', options.barColor)
-          .css('min-width', (options.barWidth / $structuredData.length) + '%')
-          ;
-        //set label container position within bar
-          switch(options.labelPosition) {
-          case 'top':
-            $bar.css('align-items', 'flex-start');
-            break;
-          case 'center':
-            $bar.css('align-items', 'center');
-            break;
-          case 'bottom':
-            $bar.css('align-items', 'flex-end');
-            break;
+          if (typeof dataObj.value === 'number') {
+            createSingleBar(dataObj);
+          } else if (typeof dataObj.value === 'object') {
+            createStackedBar(dataObj);
           }
-        // create label container in bar
-          $barLabelDiv = $('<div>').addClass('bar-label');
-          $barLabelDiv.css('display', 'flex')
-          .css('justify-content', 'center')
-          // .css('align-items', 'center')
-          ;
-        // set label container options (position)
-        // create label in label container
-          $barLabelValue = $('<p>')
-          .addClass('bar-label-value')
-          .text(dataObj.value)
-          .css('margin', '0')
-          .css('font-weight', '700')
-          .css('user-select', 'none')
-          ;
-          // pad labels depending on flex-align
-          switch(options.labelPosition) {
-          case 'top':
-            $barLabelValue.css('margin-top', '3px');
-            break;
-          case 'bottom':
-            $barLabelValue.css('margin-bottom', '3px');
-            break;
-          }
-
-          // idea: make size dependent on digit count
-
-          // set label options
-          $barLabelValue
-          .css('color', options.labelColor)
-          .css('font-size', options.labelSize + 'px')
-        ;
-
-          $barLabelDiv.append($barLabelValue);
-          $bar.append($barLabelDiv);
-
-          $barsDiv.append($bar);
         });
       }
 
@@ -143,7 +227,7 @@ $.fn.plugin = function() {
         .css('margin-right', '3px')
       ;
 
-        $barScale = (options.height || $defaultHeight) / $structuredData.reduce((acc, barObj) => Math.max(acc, barObj.value), 0);
+        $barScale = (options.height || $defaultHeight) / computeMaxValue($structuredData);
         $divisions = Math.trunc((options.height || $defaultHeight) / (options.yAxisStep * $barScale));
 
         function createYAxisDivisions(count) {
@@ -187,7 +271,6 @@ $.fn.plugin = function() {
       $structuredData = [];
       structureInputData(data);
 
-
       // create major display elements
       $chartContainer = $('<div>').addClass('api-output ' + element);
 
@@ -207,7 +290,6 @@ $.fn.plugin = function() {
       createBars();
       createXAxis();
 
-
       // add items to chartContainer
       $chartContainer.append($titleBlock);
       $chartContainer.append($componentBlock);
@@ -222,7 +304,6 @@ $.fn.plugin = function() {
       .append($chartContainer)
       .css('font-family', 'monospace')
       .css('background-color', 'grey');
-
     }
   };
 };
@@ -238,7 +319,16 @@ draw.BarChart(
   [
       {name: 'Jan', value: 100},
       {name: 'Feb', value: 18},
-      {name: 'Mar', value: 76},
+      // eslint-disable-next-line indent
+      {name: 'Mar', value: [
+          {name: 'Week 1', value: 30},
+          {name: 'Week 2', value: 30},
+          {name: 'Week 3', value: 30},
+          {name: 'Week 4', value: 30}
+        // eslint-disable-next-line indent
+        ]
+      // eslint-disable-next-line indent
+      },
       {name: 'Apr', value: 112},
       {name: 'May', value: 19},
       {name: 'Jun', value: 24},
@@ -250,19 +340,19 @@ draw.BarChart(
       {name: 'Dec', value: 79}
   ],
   {
-    height: 200,
+    height: 350,
     barColor: 'darkorange',
     barWidth: 85,
     labelColor: 'white',
-    labelSize: 8,
+    labelSize: 10,
     labelPosition: 'top',
     chartTitle: 'Data from Sources',
-    titleSize: 16,
-    titleColor: ['darkorange'],
+    titleSize: 32,
+    titleColor: ['darkorange', 'white'],
     xAxisColor: 'white',
-    xAxisSize: 8,
+    xAxisSize: 10,
     xAxisRotation: 315,
-    yAxisStep: 50
+    yAxisStep: 25
   },
     'monthly-change');
 
