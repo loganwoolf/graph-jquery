@@ -67,14 +67,9 @@ $.fn.plugin = function() {
         ;
 
         // pad labels depending on flex-align
-        switch(options.labelPosition) {
-        case 'top':
-          $barLabelValue.css('margin-top', '3px');
-          break;
-        case 'bottom':
-          $barLabelValue.css('margin-bottom', '3px');
-          break;
-        }
+        $barLabelValue
+          .css('margin-top', '3px')
+          .css('margin-bottom', '3px');
 
         // idea: make size dependent on digit count
 
