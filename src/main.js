@@ -113,7 +113,7 @@ $.fn.plugin = function() {
           $bar.css('align-items', 'flex-end');
           break;
         }
-        createBarLabel(dataObj);
+        createBarLabel(dataObj, 'value');
         $bar.append($barLabelDiv);
 
         $barsDiv.append($bar);
@@ -138,8 +138,10 @@ $.fn.plugin = function() {
             .css('width', '100%')
             .css('background-color', options.barColor)
           ;
-          createBarLabel(stackObj);
-          $stackElement.append($barLabelDiv)
+          createBarLabel(stackObj, 'name');
+          $stackElement.append($barLabelDiv);
+          createBarLabel(stackObj, 'value');
+          $stackElement.append($barLabelDiv);
 
           $stackContainer.prepend($stackElement);
         });
@@ -293,10 +295,10 @@ draw.BarChart(
       {name: 'Feb', value: 18},
       // eslint-disable-next-line indent
       {name: 'Mar', value: [
-          {name: 'Wk1', value: 40},
-          {name: 'Wk2', value: 40},
-          {name: 'Wk3', value: 40},
-          {name: 'Wk4', value: 90}
+          {name: 'Week 1', value: 40},
+          {name: 'Week 2', value: 40},
+          {name: 'Week 3', value: 40},
+          {name: 'Week 4', value: 90}
         // eslint-disable-next-line indent
         ]
       // eslint-disable-next-line indent
