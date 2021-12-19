@@ -49,7 +49,7 @@ $.fn.plugin = function() {
       ;
       }
 
-      function createBarLabel(dataObj) {
+      function createBarLabel(dataObj, key) {
         // create label container in bar
         $barLabelDiv = $('<div>').addClass('bar-label');
         $barLabelDiv.css('display', 'flex')
@@ -60,11 +60,12 @@ $.fn.plugin = function() {
         // create label in label container
         $barLabelValue = $('<p>')
         .addClass('bar-label-value')
-        .text(dataObj.value)
+        .text(dataObj[key])
         .css('margin', '0')
         .css('font-weight', '700')
         .css('user-select', 'none')
         ;
+
         // pad labels depending on flex-align
         switch(options.labelPosition) {
         case 'top':
