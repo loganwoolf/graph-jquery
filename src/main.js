@@ -86,6 +86,7 @@ $.fn.plugin = function() {
         // create bar
         $bar = $('<div>')
         .addClass('bar')
+        .attr('data-name', dataObj.name)
         .attr('data-value', dataObj.value)
         .css('height', (dataObj.value * $barScale) + 'px')
         .css('display', 'flex')
@@ -115,23 +116,25 @@ $.fn.plugin = function() {
       }
 
       function createStackedBar(dataObj) {
+        // compute total of stacked bars for label
+        const sumTotal = dataObj.value.reduce((acc, element) => acc + element.value, 0);
 
         $stackContainer = $('<div>')
         .addClass('stack-bar')
+        .attr('data-name', dataObj.name)
+        .attr('data-value', sumTotal)
         .css('display', 'flex')
         .css('flex-direction', 'column')
         .css('min-width', options.barWidth / $structuredData.length + '%')
         ;
 
-        // compute total of stacked bars for label
-        const sumTotal = dataObj.value.reduce((acc, element) => acc + element.value, 0);
 
         //create an element for each item in stack
         $.each(dataObj.value, function(index, stackObj) {
           $stackElement = $('<div>')
             .addClass('stack-element')
-            .attr('data-value', stackObj.value)
             .attr('data-name', stackObj.name)
+            .attr('data-value', stackObj.value)
             .css('display', 'flex')
             .css('flex-direction', 'column')
             .css('height', (stackObj.value * $barScale) + 'px')
