@@ -137,6 +137,8 @@ $.fn.plugin = function() {
             .css('width', '100%')
             .css('background-color', options.barColor)
           ;
+          createBarLabel(stackObj);
+          $stackElement.append($barLabelDiv)
 
           $stackContainer.prepend($stackElement);
         });
