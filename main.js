@@ -1,17 +1,6 @@
-//document ready event
 $.fn.plugin = function() {
   return {
-    BarChart: function(data, options, element) {
-
-      function structureInputData(data) {
-        if (typeof data[0] === 'number') {
-          $.each(data, function(index, barValue){
-            $structuredData.push({value: barValue});
-          });
-        } else {
-          $structuredData = data;
-        }
-      }
+    barChart: function(data, options = {}, element = 'new-chart') {
 
       function computeMaxValue(values) {
         let maxValue = 0;
@@ -28,8 +17,34 @@ $.fn.plugin = function() {
         return maxValue;
       }
 
+      function setDefaultOptions() {
+        !options.height ? options.height = 350 : undefined;
+        !options.barColor ? options.barColor = 'darkorange' : undefined;
+        !options.barWidth ? options.barWidth = 85 : undefined;
+        !options.labelColor ? options.labelColor = 'white' : undefined;
+        !options.labelSize ? options.labelSize = 10 : undefined;
+        !options.labelPosition ? options.labelPosition = 'top' : undefined;
+        !options.chartTitle ? options.chartTitle = 'Bar Graph of Data' : undefined;
+        !options.titleSize ? options.titleSize = 32 : undefined;
+        !options.titleColor ? options.titleColor = ['white', 'darkorange'] : undefined;
+        !options.axisColor ? options.axisColor = 'white' : undefined;
+        !options.xAxisRotation ? options.xAxisRotation = 315 : undefined;
+        !options.yAxisStep ? options.yAxisStep = Math.round(computeMaxValue($structuredData) / 5) : undefined;
+        !options.backgroundColor ? options.backgroundColor = 'grey' : undefined;
+      }
+
+      function structureInputData(data) {
+        if (typeof data[0] === 'number') {
+          $.each(data, function(index, barValue){
+            $structuredData.push({value: barValue});
+          });
+        } else {
+          $structuredData = data;
+        }
+      }
+
       function createTitle() {
-        $titleBlock.css('background-color', options.titleColor[1] || 'hsla(0, 0%, 0%, 0)');
+        $titleBlock.css('background-color', options.titleColor[1]);
         $title = $('<h1>')
       .css('text-align', 'center')
       .css('color', options.titleColor[0])
@@ -177,7 +192,7 @@ $.fn.plugin = function() {
 
       function createBars() {
 
-        $barScale = (options.height || $defaultHeight) / computeMaxValue($structuredData);
+        $barScale = (options.height) / computeMaxValue($structuredData);
 
         $barsDiv.css('display', 'flex');
         $barsDiv.css('align-items', 'flex-end');
@@ -207,7 +222,7 @@ $.fn.plugin = function() {
           $xLabelValue = $('<p>')
           .css('width', (options.barWidth / $structuredData.length) + '%')
           .css('text-align', 'center')
-          .css('color', (options.xAxisColor || 'black'))
+          .css('color', options.axisColor)
           .css('font-size', options.xAxisSize + 'px')
           .css('transform', 'rotate(' + options.xAxisRotation + 'deg)')
           .text(dataObj.name)
@@ -220,34 +235,35 @@ $.fn.plugin = function() {
 
       function createYAxis() {
         $yAxisDiv
-        .css('display', 'flex')
-        .css('flex-direction', 'column')
-        .css('justify-content', 'flex-end')
-        .css('border-right', '1px solid white')
-        .css('margin-right', '3px')
-      ;
+          .css('display', 'flex')
+          .css('flex-direction', 'column')
+          .css('justify-content', 'flex-end')
+          .css('border-right', `1px solid ${options.axisColor}`)
+          .css('margin-right', '3px')
+        ;
 
-        $barScale = (options.height || $defaultHeight) / computeMaxValue($structuredData);
-        $divisions = Math.trunc((options.height || $defaultHeight) / (options.yAxisStep * $barScale));
+        $barScale = (options.height) / computeMaxValue($structuredData);
+        $divisions = Math.trunc((options.height) / (options.yAxisStep * $barScale));
 
         function createYAxisDivisions(count) {
           for (let i = 0; i < count; i++) {
             $yAxisTic = $('<div>');
             $yAxisTic
-            .css('box-sizing', 'border-box')
-            .css('border-top', '1px solid white')
-            .css('height', `${options.yAxisStep * $barScale}px`)
-          ;
+              .css('box-sizing', 'border-box')
+              .css('border-top', `1px solid ${options.axisColor}`)
+              .css('height', `${options.yAxisStep * $barScale}px`)
+            ;
             if (i === 0) {
-              $yAxisTic.css('border-bottom', '1px solid white');
+              $yAxisTic.css('border-bottom', `1px solid ${options.axisColor}`);
             }
 
             $yAxisScale = $('<p>');
             $yAxisScale
-            .css('margin', '0 0 0 0')
-            .css('text-align', 'center')
-            .css('color', options.xAxisColor)
-            .css('font-size', `${options.xAxisSize}px`);
+              .css('margin', '0 0 0 0')
+              .css('text-align', 'center')
+              .css('color', options.axisColor)
+              .css('font-size', `${options.xAxisSize}px`)
+            ;
             $yAxisScale.text(options.yAxisStep * (i + 1));
             $yAxisTic.append($yAxisScale);
             $yAxisDiv.prepend($yAxisTic);
@@ -264,12 +280,12 @@ $.fn.plugin = function() {
           ;
       }
 
-      // set defaults
-      $defaultHeight = 600;
-
       // convert data array to objects if not already
       $structuredData = [];
       structureInputData(data);
+
+      // set defaults on missing options
+      setDefaultOptions();
 
       // create major display elements
       $chartContainer = $('<div>').addClass('api-output ' + element);
@@ -303,58 +319,13 @@ $.fn.plugin = function() {
       $('body')
       .append($chartContainer)
       .css('font-family', 'monospace')
-      .css('background-color', 'grey');
+      .css('background-color', options.backgroundColor);
     }
   };
 };
 
 // initialize plugin
 const draw = $().plugin();
-
-// example calling of function
-draw.BarChart(
-    // plain array
-    //[7, 18, 3, 12, 19, 24, 7, 45, 7, 8, 16, 7],
-    // objects
-  [
-      {name: 'Jan', value: 100},
-      {name: 'Feb', value: 18},
-      // eslint-disable-next-line indent
-      {name: 'Mar', value: [
-          {name: 'Week 1', value: 30},
-          {name: 'Week 2', value: 30},
-          {name: 'Week 3', value: 30},
-          {name: 'Week 4', value: 30}
-        // eslint-disable-next-line indent
-        ]
-      // eslint-disable-next-line indent
-      },
-      {name: 'Apr', value: 112},
-      {name: 'May', value: 19},
-      {name: 'Jun', value: 24},
-      {name: 'Jul', value: 67},
-      {name: 'Aug', value: 45},
-      {name: 'Sep', value: 126},
-      {name: 'Oct', value: 82},
-      {name: 'Nov', value: 151},
-      {name: 'Dec', value: 79}
-  ],
-  {
-    height: 350,
-    barColor: 'darkorange',
-    barWidth: 85,
-    labelColor: 'white',
-    labelSize: 10,
-    labelPosition: 'top',
-    chartTitle: 'Data from Sources',
-    titleSize: 32,
-    titleColor: ['darkorange', 'white'],
-    xAxisColor: 'white',
-    xAxisSize: 10,
-    xAxisRotation: 315,
-    yAxisStep: 25
-  },
-    'monthly-change');
 
 
 
