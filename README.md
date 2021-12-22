@@ -2,6 +2,8 @@
 Lighthouse Labs Prep Material Stretch Project
 
 ## About
+A jQuery plugin that will render data passed in as a function argument. It can be found at http://loganwoolf.github.io/lhl-prep-stretch.
+
 The prep material for Lighthouse Labs' Web Development bootcamp contains an optional project to work on if extra time is available before the start of bootcamp. This is my attempt at it.
 
 ## Screenshots
